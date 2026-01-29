@@ -6,7 +6,7 @@ import unicodedata
 st.set_page_config(page_title="🧧 Red Packet Fun", page_icon="🧧")
 
 st.title("🧧 新年红包 • Shake & Reveal")
-st.caption("Fun, fast, and WhatsApp-friendly 😄")
+##st.caption("Fun, fast, and WhatsApp-friendly 😄")
 
 # --- Helpers to reduce "out of line" issues for ASCII boxes ---
 def display_width(s: str) -> int:
@@ -32,7 +32,7 @@ def pad_to_width(s: str, width: int) -> str:
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    name = st.text_input("Enter name (keep it short for nicest formatting)", value="YOU")
+    name = st.text_input("Enter name 请输入您的富贵名", value="YOU")
 with col2:
     mode = st.selectbox("Style", ["WhatsApp Compact (recommended)", "ASCII Box (monospace)"])
 
@@ -84,7 +84,7 @@ Luck: {luck}
 Persona: {persona}
 2026关键词: {keyword}
 
-（复制这段发 WhatsApp 😄）"""
+（Huat Kueh Friendly 😄）"""
         st.code(msg, language="text")
 
     else:
@@ -106,7 +106,7 @@ Persona: {persona}
         )
 
         st.code(box, language="text")
-        st.caption("Tip: If alignment still looks off on WhatsApp, use the Compact style above.")
+        #st.caption("Tip: If alignment still looks off on WhatsApp, use the Compact style above.")
 
-st.divider()
-st.caption("Idea: share your Streamlit link on WhatsApp so friends can generate their own 🧧")
+#st.divider()
+#st.caption("Idea: share your Streamlit link on WhatsApp so friends can generate their own 🧧")
