@@ -4,7 +4,7 @@ import random
 
 st.set_page_config(page_title="🧧 Red Packet Fun", page_icon="🧧")
 
-st.title("🧧 新年红包 • Shake & Reveal | New Year Red Packet")
+st.title("🧧 新年红包 • New Year Red Packet")
 
 # --- UI ---
 name = st.text_input("Enter name 请输入您的富贵名", value="YOU").strip()
