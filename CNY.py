@@ -108,7 +108,7 @@ Fortune Meter / 好运指数: {fortune_score}/100
 
 {bonus if show_bonus else ""}
 
-Copy & send on WhatsApp 😄 | 复制后发 WhatsApp 😄
+马上Huat财 😄😄😄😄😄
 """
 
     # Clean up extra blank lines if no bonus
