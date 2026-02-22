@@ -1,0 +1,25 @@
+name: Keep Streamlit Alive
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create dummy file or update timestamp
+        run: |
+          date > ping.txt
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ping.txt
+          git commit -m "Heartbeat: Keeping Streamlit App Awake"
+          git push
