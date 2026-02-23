@@ -6,13 +6,13 @@ import html
 
 st.set_page_config(page_title="🧧 Red Packet Fun", page_icon="🧧")
 
-st.title("🧧 新年红包 • New Year Red Packet")
+st.title("🧧 新年红包 🧧")
 
 # --- UI ---
 name = st.text_input("Enter name 请输入您的富贵名", value="YOU").strip()
 
 st.write("")
-if st.button("🧧 Shake to open 红包 | Shake to open red packet", use_container_width=True):
+if st.button("🧧 Click to open 红包 (Red Packet) 🧧", use_container_width=True):
 
     tease_lines = [
         "Searching for your luck… 🍊 | 正在寻找你的好运… 🍊",
@@ -234,4 +234,5 @@ if st.button("🧧 Shake to open 红包 | Shake to open red packet", use_contain
         "贵人多多，机会多多! | More helpers, more opportunities!",
         "开工大吉! | Great start to work!",
     ])
+
     st.caption(closing)
