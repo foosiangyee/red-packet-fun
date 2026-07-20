@@ -393,15 +393,16 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     )
 
     particles_js = str(burst["particles"]).replace("'", '"')
-    stage_height = {"normal": 760, "high": 820, "jackpot": 900}[tier]
-    rain_fall_y = min(stage_height - 140, 600)
+    # Fallback height used only for the first paint, before JS measures the
+    # real content and resizes the iframe to fit exactly — see fitFrame() below.
+    stage_height = {"normal": 520, "high": 560, "jackpot": 640}[tier]
 
     animated_html = f"""
     <html><head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>html,body{{margin:0;background:transparent;overflow:visible;}}</style></head>
     <body>
-    <div id="rp-stage" style="position:relative;width:100%;max-width:820px;margin:0 auto;overflow:visible;box-sizing:border-box;padding-bottom:20px;">
+    <div id="rp-stage" style="position:relative;width:100%;max-width:820px;margin:0 auto;overflow:visible;box-sizing:border-box;">
         {card_html}
         <div style="display:flex;justify-content:center;margin-top:16px;gap:10px;align-items:center;flex-wrap:wrap;">
           <button id="dl-btn" style="background:#111;color:#fff;border:none;padding:10px 18px;
@@ -414,6 +415,24 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     (function() {{
         const stage = document.getElementById('rp-stage');
         const particles = {particles_js};
+        const rainOvershoot = 70; // extra room below the card so falling coins don't clip abruptly
+
+        // Resize the iframe itself to match the card's real rendered height,
+        // instead of relying on a fixed guess from Python. This is what makes
+        // the gap disappear when the text is short, and prevents cropping when
+        // it wraps to two lines — it adapts to whatever actually rendered.
+        function fitFrame() {{
+            try {{
+                const h = Math.ceil(stage.getBoundingClientRect().height) + rainOvershoot;
+                if (window.frameElement) {{
+                    window.frameElement.style.height = h + 'px';
+                }}
+            }} catch (e) {{}}
+        }}
+        fitFrame();
+        setTimeout(fitFrame, 60);
+        setTimeout(fitFrame, 400);
+        window.addEventListener('load', fitFrame);
 
         function makeParticle() {{
             const p = document.createElement('div');
@@ -451,7 +470,7 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
         // Phase 2: a fuller shower of coins raining down across the card width, staggered over time
         const rainCount = {burst['rain_count']};
         const rainDuration = {burst['rain_duration']};
-        const rainFallY = {rain_fall_y};
+        const rainFallY = Math.ceil(stage.getBoundingClientRect().height) + (rainOvershoot * 0.6);
         for (let i = 0; i < rainCount; i++) {{
             const delay = Math.random() * rainDuration * 0.7;
             setTimeout(() => {{
