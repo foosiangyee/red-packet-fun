@@ -28,7 +28,21 @@ ZODIAC_ANIMALS = [
 zodiac = ZODIAC_ANIMALS[(CURRENT_YEAR - 2020) % 12]
 
 
-st.title(f"🧧 {CURRENT_YEAR} 新年红包 · {zodiac}")
+zodiac_zh, zodiac_en = zodiac.split(" ", 1)
+st.markdown(
+    f"""
+    <div style="text-align:left;padding:0.25rem 0 0.75rem;">
+      <div style="font-size:clamp(24px,7vw,40px);line-height:1.2;font-weight:800;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        🧧 {CURRENT_YEAR} 新年红包
+      </div>
+      <div style="font-size:clamp(14px,4vw,20px);color:#d4af37;margin-top:2px;font-weight:600;">
+        {zodiac_zh} · Year of the {zodiac_en}
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- UI ---
 name = st.text_input("Enter name 请输入您的富贵名", value="YOU").strip()
@@ -379,8 +393,8 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     )
 
     particles_js = str(burst["particles"]).replace("'", '"')
-    stage_height = {"normal": 340, "high": 380, "jackpot": 460}[tier]
-    rain_fall_y = stage_height - 60
+    stage_height = {"normal": 760, "high": 820, "jackpot": 900}[tier]
+    rain_fall_y = min(stage_height - 140, 600)
 
     animated_html = f"""
     <html><head>
@@ -389,7 +403,13 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     <body>
     <div id="rp-stage" style="position:relative;width:100%;max-width:820px;margin:0 auto;overflow:visible;box-sizing:border-box;padding-bottom:20px;">
         {card_html}
+        <div style="display:flex;justify-content:center;margin-top:16px;gap:10px;align-items:center;flex-wrap:wrap;">
+          <button id="dl-btn" style="background:#111;color:#fff;border:none;padding:10px 18px;
+            border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;">Download image / 下载图片</button>
+          <span id="dl-status" style="font-size:12px;color:#888;"></span>
+        </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
     (function() {{
         const stage = document.getElementById('rp-stage');
@@ -451,6 +471,20 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
                 setTimeout(() => p.remove(), fallDuration + 60);
             }}, delay);
         }}
+
+        document.getElementById('dl-btn').addEventListener('click', function() {{
+            const status = document.getElementById('dl-status');
+            status.textContent = 'Rendering...';
+            html2canvas(document.getElementById('rp-card'), {{scale: 2, backgroundColor: null}}).then(function(canvas) {{
+                const link = document.createElement('a');
+                link.download = 'red-packet-{CURRENT_YEAR}.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                status.textContent = 'Downloaded';
+            }}).catch(function(err) {{
+                status.textContent = 'Could not render image';
+            }});
+        }});
     }})();
     </script>
     </body></html>
@@ -474,74 +508,6 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
             'text-align:center;font-weight:900;">✉️ Share via Email</div></a>',
             unsafe_allow_html=True
         )
-
-    st.write("")
-    st.caption("Downloadable square card / 可下载方形卡片")
-
-    persona_short_html = html.escape(persona.split(" | ")[0].strip())
-    keyword_html_short = html.escape(keyword)
-    luck_zh_html = html.escape(luck_zh)
-    luck_en_html = html.escape(luck_en)
-
-    share_card_html = f"""
-    <html><head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>html,body{{margin:0;background:transparent;}}</style></head>
-    <body>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0;">
-      <div id="share-card" style="width:min(340px, 90vw);aspect-ratio:1/1;border-radius:18px;overflow:hidden;position:relative;
-        background:linear-gradient(160deg,#7a0000 0%,#b3001b 55%,#5c0000 100%);
-        display:flex;flex-direction:column;color:#fff;font-family:sans-serif;">
-        <div style="position:absolute;inset:0;opacity:0.08;font-size:280px;font-weight:900;
-          display:flex;align-items:center;justify-content:center;color:#ffd76a;pointer-events:none;">福</div>
-        <div style="padding:18px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;position:relative;">
-          <div>
-            <div style="font-size:11px;letter-spacing:1px;color:#ffd76a;">{CURRENT_YEAR} · {html.escape(zodiac).upper()}</div>
-            <div style="font-size:18px;font-weight:600;margin-top:3px;">{safe_name_html}</div>
-          </div>
-          <span style="font-size:22px;">🧧</span>
-        </div>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:24px;position:relative;">
-          <div style="width:112px;height:112px;border-radius:50%;border:3px solid #ffd76a;
-            display:flex;flex-direction:column;align-items:center;justify-content:center;">
-            <div style="font-size:38px;font-weight:600;color:#ffd76a;line-height:1;">{fortune_score}</div>
-            <div style="font-size:10px;color:#ffe9b0;margin-top:2px;">fortune</div>
-          </div>
-          <div style="text-align:left;max-width:120px;">
-            <div style="font-size:13px;color:#ffe9b0;">{luck_zh_html}</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;">{luck_en_html}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:6px;">{persona_short_html}</div>
-          </div>
-        </div>
-        <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center;position:relative;">
-          <span style="font-size:10px;color:rgba(255,255,255,0.65);">{keyword_html_short} · {amount_html}</span>
-          <span style="font-size:10px;color:rgba(255,255,255,0.55);">via {CURRENT_YEAR} 新年红包</span>
-        </div>
-      </div>
-      <button id="dl-btn" style="background:#111;color:#fff;border:none;padding:10px 18px;
-        border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;">Download image / 下载图片</button>
-      <span id="dl-status" style="font-size:12px;color:#888;"></span>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script>
-    document.getElementById('dl-btn').addEventListener('click', function() {{
-        const status = document.getElementById('dl-status');
-        status.textContent = 'Rendering...';
-        html2canvas(document.getElementById('share-card'), {{scale: 2, backgroundColor: null}}).then(function(canvas) {{
-            const link = document.createElement('a');
-            link.download = 'red-packet-{CURRENT_YEAR}.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            status.textContent = 'Downloaded';
-        }}).catch(function(err) {{
-            status.textContent = 'Could not render image';
-        }});
-    }});
-    </script>
-    </body></html>
-    """
-
-    components.html(share_card_html, height=480, scrolling=False)
 
     with st.expander("Plain text (copy manually) / 纯文字（手动复制）"):
         st.text(share_text)
