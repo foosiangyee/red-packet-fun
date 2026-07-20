@@ -116,6 +116,12 @@
   .meter-fill { height: 100%; background: linear-gradient(90deg, rgba(255,215,0,0.95), rgba(255,255,255,0.85)); border-radius: 999px; }
   .bonus-line { margin-top: 10px; font-size: 14px; opacity: 0.95; }
   .particle { position: absolute; z-index: 10; pointer-events: none; }
+  .coin-particle {
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff6c8, #ffd700 55%, #b8860b 100%);
+    border: 1px solid #8a6d00;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
   .actions-row { display: flex; justify-content: center; margin-top: 16px; gap: 10px; align-items: center; flex-wrap: wrap; }
   #dl-btn {
     background: #111; color: #fff; border: none; padding: 10px 18px;
@@ -132,7 +138,7 @@
   details {
     margin-top: 16px; border: 1px solid #3a3b45; border-radius: 10px; padding: 10px 14px;
   }
-  details summary { cursor: pointer; color: #c9c9c9; }
+  details summary { cursor: pointer; color: #c9c9c9; white-space: nowrap; overflow-x: auto; font-size: 13px; }
   #plain-text { white-space: pre-wrap; font-size: 14px; margin-top: 10px; color: #ddd; }
   #closing-line { margin-top: 16px; color: #c9c9c9; font-size: 14px; }
   .tip-footer {
@@ -529,11 +535,22 @@
   // ---------------------------------------------------------------------
   function runCoinAnimation(stage, burst) {
     function makeParticle(particles) {
+      const token = particles[Math.floor(Math.random() * particles.length)];
       const p = document.createElement("div");
       p.className = "particle";
-      p.textContent = particles[Math.floor(Math.random() * particles.length)];
-      p.style.fontSize = (14 + Math.random() * 14) + "px";
       p.style.opacity = "1";
+      if (token === "🪙") {
+        // Drawn with CSS rather than the emoji glyph, since 🪙 renders
+        // silver/grey on iOS's built-in emoji font but gold on most
+        // desktop browsers — this keeps it gold everywhere.
+        const size = 14 + Math.random() * 10;
+        p.classList.add("coin-particle");
+        p.style.width = size + "px";
+        p.style.height = size + "px";
+      } else {
+        p.textContent = token;
+        p.style.fontSize = (14 + Math.random() * 14) + "px";
+      }
       return p;
     }
 
