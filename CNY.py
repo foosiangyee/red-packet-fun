@@ -342,7 +342,8 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
         jackpot_style +
         '<div id="rp-card" style="background:linear-gradient(135deg,#7a0000 0%,#d00000 45%,#860000 100%);'
         'border:2px solid rgba(255,215,0,0.75);border-radius:18px;padding:18px 18px 14px 18px;'
-        'color:#fff;position:relative;overflow:visible;box-shadow:0 10px 22px rgba(0,0,0,0.18);max-width:820px;'
+        'color:#fff;position:relative;overflow:visible;box-shadow:0 10px 22px rgba(0,0,0,0.18);'
+        'width:100%;max-width:820px;box-sizing:border-box;'
         + ('animation:jackpotPulse 1.4s ease-in-out 3;' if is_jackpot else '') +
         '">'
 
@@ -378,12 +379,15 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     )
 
     particles_js = str(burst["particles"]).replace("'", '"')
-    stage_height = {"normal": 420, "high": 480, "jackpot": 580}[tier]
+    stage_height = {"normal": 340, "high": 380, "jackpot": 460}[tier]
+    rain_fall_y = stage_height - 60
 
     animated_html = f"""
-    <html><head><style>html,body{{margin:0;background:transparent;overflow:visible;}}</style></head>
+    <html><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>html,body{{margin:0;background:transparent;overflow:visible;}}</style></head>
     <body>
-    <div id="rp-stage" style="position:relative;max-width:820px;margin:0 auto;overflow:visible;padding-bottom:180px;">
+    <div id="rp-stage" style="position:relative;width:100%;max-width:820px;margin:0 auto;overflow:visible;box-sizing:border-box;padding-bottom:20px;">
         {card_html}
     </div>
     <script>
@@ -427,6 +431,7 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
         // Phase 2: a fuller shower of coins raining down across the card width, staggered over time
         const rainCount = {burst['rain_count']};
         const rainDuration = {burst['rain_duration']};
+        const rainFallY = {rain_fall_y};
         for (let i = 0; i < rainCount; i++) {{
             const delay = Math.random() * rainDuration * 0.7;
             setTimeout(() => {{
@@ -439,7 +444,7 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
                 p.style.transform = 'rotate(0deg)';
                 stage.appendChild(p);
                 requestAnimationFrame(() => {{
-                    p.style.top = '340px';
+                    p.style.top = rainFallY + 'px';
                     p.style.transform = `rotate(${{(Math.random() * 480) - 240}}deg) translateX(${{(Math.random() * 40) - 20}}px)`;
                     p.style.opacity = '0.15';
                 }});
@@ -479,10 +484,12 @@ if st.button("🧧 Shake to open 红包 (Red Packet)", use_container_width=True)
     luck_en_html = html.escape(luck_en)
 
     share_card_html = f"""
-    <html><head><style>html,body{{margin:0;background:transparent;}}</style></head>
+    <html><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>html,body{{margin:0;background:transparent;}}</style></head>
     <body>
     <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0;">
-      <div id="share-card" style="width:340px;aspect-ratio:1/1;border-radius:18px;overflow:hidden;position:relative;
+      <div id="share-card" style="width:min(340px, 90vw);aspect-ratio:1/1;border-radius:18px;overflow:hidden;position:relative;
         background:linear-gradient(160deg,#7a0000 0%,#b3001b 55%,#5c0000 100%);
         display:flex;flex-direction:column;color:#fff;font-family:sans-serif;">
         <div style="position:absolute;inset:0;opacity:0.08;font-size:280px;font-weight:900;
