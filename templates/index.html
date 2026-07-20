@@ -603,15 +603,62 @@
   function wireDownloadButton() {
     document.getElementById("dl-btn").addEventListener("click", function () {
       const status = document.getElementById("dl-status");
+      const existingPreview = document.getElementById("dl-preview-wrap");
+      if (existingPreview) {
+        const oldImg = existingPreview.querySelector("img");
+        if (oldImg && oldImg.src) URL.revokeObjectURL(oldImg.src);
+        existingPreview.remove();
+      }
       status.textContent = "Rendering...";
+
       html2canvas(document.getElementById("rp-card"), { scale: 2, backgroundColor: null }).then(function (canvas) {
-        const link = document.createElement("a");
-        link.download = `red-packet-${CURRENT_YEAR}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-        status.textContent = "Downloaded";
-      }).catch(function () {
-        status.textContent = "Could not render image";
+        if (canvas.width === 0 || canvas.height === 0) {
+          status.textContent = "Capture failed (0x0 canvas) — see note below";
+          return;
+        }
+        canvas.toBlob(function (blob) {
+          if (!blob || blob.size === 0) {
+            status.textContent = "Capture produced an empty file — see note below";
+            return;
+          }
+
+          const url = URL.createObjectURL(blob);
+
+          // Show what was actually captured directly on the page. This is
+          // deliberately not relying on an automatic download trigger —
+          // if the auto-download is silently failing (as reported on both
+          // iOS Safari and desktop Chrome), this still gives a guaranteed
+          // way to see and manually save the image (long-press to save on
+          // mobile, right-click "Save image as" on desktop), and tells us
+          // whether html2canvas captured correctly in the first place.
+          const wrap = document.createElement("div");
+          wrap.id = "dl-preview-wrap";
+          wrap.style.marginTop = "12px";
+          wrap.innerHTML = `
+            <div style="font-size:12px;color:#888;margin-bottom:6px;">
+              Captured ${canvas.width}×${canvas.height}px, ${(blob.size / 1024).toFixed(0)}KB —
+              long-press (mobile) or right-click (desktop) the image below to save it.
+            </div>
+            <img src="${url}" style="max-width:100%;border-radius:12px;border:1px solid #3a3b45;">
+            <div style="margin-top:8px;">
+              <a href="${url}" download="red-packet-${CURRENT_YEAR}.png" style="color:#7fd7ff;font-size:13px;">Open image directly →</a>
+            </div>
+          `;
+          document.getElementById("rp-stage").appendChild(wrap);
+
+          // Still attempt the automatic download as a convenience — if it
+          // silently does nothing, the preview above is the real fallback.
+          const link = document.createElement("a");
+          link.download = `red-packet-${CURRENT_YEAR}.png`;
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+
+          status.textContent = "Ready — see image below if nothing downloaded";
+        }, "image/png");
+      }).catch(function (err) {
+        status.textContent = "Capture error: " + (err && err.message ? err.message : String(err));
       });
     });
   }
