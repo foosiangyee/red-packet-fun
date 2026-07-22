@@ -150,9 +150,65 @@
     background: #7a0000; color: white; padding: 8px 12px; border-radius: 10px;
     text-align: center; font-size: 13px; font-weight: 700; text-decoration: none;
   }
+
+  /* --- Splash / greeting overlay (Fortune Master) --- */
+  #splash-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(14,17,23,0.97);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+  }
+  #splash-overlay img {
+    width: min(200px, 55vw);
+    margin-bottom: 18px;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.4));
+  }
+  #splash-overlay h1 {
+    font-size: clamp(20px, 6vw, 28px);
+    margin: 0 0 8px;
+    color: #fafafa;
+  }
+  #splash-overlay p {
+    color: #c9c9c9; font-size: 14px; margin: 0 0 22px; max-width: 320px; line-height: 1.5;
+  }
+  #splash-enter-btn {
+    background: #d4af37; color: #1a1a1a; border: none; padding: 14px 30px;
+    border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer;
+  }
+  #splash-enter-btn:active { transform: scale(0.98); }
+
+  /* --- Rarity-tier avatar shown inside the result card --- */
+  .card-avatar-wrap { text-align: center; margin: 4px 0 10px; }
+  .card-avatar-wrap img {
+    height: 84px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  }
 </style>
 </head>
 <body>
+
+<div id="splash-overlay">
+  <img src="/static/images/splash-fortune-master.png" alt="Fortune Master">
+  <h1>福气满满，天天好运！<br>Blessings &amp; Good Fortune!</h1>
+  <p>The Fortune Master has a red packet ready for you. Tap in to shake it open. | 财神已备好红包，点击进入摇一摇！</p>
+  <button id="splash-enter-btn">Enter · 进入</button>
+</div>
+<script>
+  // Shown once per browser session — a returning visitor within the same
+  // session goes straight to the app instead of seeing the greeting again.
+  (function () {
+    const overlay = document.getElementById("splash-overlay");
+    if (sessionStorage.getItem("rp_splash_seen")) {
+      overlay.style.display = "none";
+      return;
+    }
+    document.getElementById("splash-enter-btn").addEventListener("click", function () {
+      overlay.style.display = "none";
+      sessionStorage.setItem("rp_splash_seen", "1");
+    });
+  })();
+</script>
+
 <div class="wrap">
 
   <div class="header">
@@ -441,6 +497,13 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
     jackpot: { burstCount: 30, burstSpread: 170, burstDuration: 1200, rainCount: 60, rainDuration: 2400, particles: ["🪙", "✨", "🐉"] }
   };
 
+  // Rarity-tier avatar images — same three tiers as BURST_CONFIG above.
+  const AVATAR_MAP = {
+    normal:  { src: "/static/images/tier-normal.png",  alt: "Lucky red packet" },
+    high:    { src: "/static/images/tier-high.png",    alt: "Lucky fortune cat" },
+    jackpot: { src: "/static/images/tier-jackpot.png", alt: "Cai Shen, God of Wealth" }
+  };
+
   // ---------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------
@@ -517,6 +580,9 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
           <div class="title">${CURRENT_YEAR} 新年红包 · ${zodiac} <span style="opacity:0.85;">•</span> New Year Red Packet</div>
         </div>
         ${jackpotBanner}
+        <div class="card-avatar-wrap">
+          <img src="${AVATAR_MAP[tier].src}" alt="${AVATAR_MAP[tier].alt}">
+        </div>
         <div class="grid">
           <div><b>To / 收件人:</b><br>${escapeHtml(safeName)}</div>
           <div><b>Amount / 红包量:</b><br>${amount}</div>
