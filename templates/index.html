@@ -95,6 +95,11 @@
     60%  { transform: perspective(800px) rotateY(4deg) rotateX(-1deg) scale(1.02); opacity: 1; }
     100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); opacity: 1; }
   }
+  @keyframes tornadoSpinIn3D {
+    0%   { transform: perspective(600px) rotateY(0deg) rotate(0deg) scale(0.1); opacity: 0; }
+    60%  { transform: perspective(600px) rotateY(720deg) rotate(540deg) scale(1.15); opacity: 1; }
+    100% { transform: perspective(600px) rotateY(1080deg) rotate(720deg) scale(1); opacity: 1; }
+  }
   #rp-card {
     background: linear-gradient(135deg, #7a0000 0%, #d00000 45%, #860000 100%);
     border: 2px solid rgba(255,215,0,0.75);
@@ -194,6 +199,12 @@
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
     animation: avatarFloat 2.4s ease-in-out infinite;
   }
+  /* Jackpot gets a dramatic 3D vortex spin-in instead of the gentle float,
+     then settles into the same gentle float once it's landed. */
+  .card-avatar-wrap.jackpot-avatar img {
+    animation: tornadoSpinIn3D 1400ms cubic-bezier(.2,.7,.3,1) both,
+               avatarFloat 2.4s ease-in-out 1400ms infinite;
+  }
 </style>
 </head>
 <body>
@@ -201,7 +212,7 @@
 <div id="splash-overlay">
   <img src="/static/images/splash-fortune-master.png" alt="Fortune Master">
   <h1>福气满满，天天好运！<br>Blessings &amp; Good Fortune!</h1>
-  <p>The Fortune Master has a red packet ready for you. Tap the button to open it. | 财神已备好红包，点击进入摇一摇！</p>
+  <p>The Fortune Master has a red packet ready for you. Tap in to shake it open. | 财神已备好红包，点击进入摇一摇！</p>
   <button id="splash-enter-btn">Enter · 进入</button>
 </div>
 <script>
@@ -227,7 +238,6 @@
     <div class="line2" id="title-line2"></div>
   </div>
 
-<!--
 <div id="counter-wrap" style="margin-top: 6px; margin-bottom: 4px; font-size: 12px; color: #8a8d98;">
   <a href='http://www.freevisitorcounters.com' style="color: #8a8d98; text-decoration: none;">Free counter</a>
   <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=13d0b5da4f6d6106fec0780bfaa51d051d13d479'></script>
@@ -242,12 +252,11 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
   }
 }, true);
 </script>
--->
-
+ 
   <label for="name-input">Enter name 请输入您的富贵名</label>
   <input type="text" id="name-input" value="YOU" maxlength="18">
 
-  <button id="shake-btn">🧧 Click to open 红包 (Red Packet)</button>
+  <button id="shake-btn">🧧 Shake to open 红包 (Red Packet)</button>
   <div id="tease"></div>
   <div id="success-msg">Opened! 🎉 | 开启成功！🎉</div>
 
@@ -593,7 +602,7 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
           <div class="title">${CURRENT_YEAR} 新年红包 · ${zodiac} <span style="opacity:0.85;">•</span> New Year Red Packet</div>
         </div>
         ${jackpotBanner}
-        <div class="card-avatar-wrap">
+        <div class="card-avatar-wrap${tier === 'jackpot' ? ' jackpot-avatar' : ''}">
           <img src="${AVATAR_MAP[tier].src}" alt="${AVATAR_MAP[tier].alt}">
         </div>
         <div class="grid">
