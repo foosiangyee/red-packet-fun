@@ -177,6 +177,8 @@
     width: min(200px, 55vw);
     margin-bottom: 18px;
     filter: drop-shadow(0 8px 18px rgba(0,0,0,0.4));
+    animation: tornadoSpinIn3D 1400ms cubic-bezier(.2,.7,.3,1) both,
+               avatarFloat 2.4s ease-in-out 1400ms infinite;
   }
   #splash-overlay h1 {
     font-size: clamp(20px, 6vw, 28px);
@@ -212,7 +214,7 @@
 <div id="splash-overlay">
   <img src="/static/images/splash-fortune-master.png" alt="Fortune Master">
   <h1>福气满满，天天好运！<br>Blessings &amp; Good Fortune!</h1>
-  <p>The Fortune Master has a red packet ready for you. Tap in to shake it open. | 财神已备好红包，点击进入摇一摇！</p>
+  <p>The Fortune Master has a red packet ready for you. Tap in, then press Shake to open it. | 财神已备好红包，点击进入后按"摇一摇"开启！</p>
   <button id="splash-enter-btn">Enter · 进入</button>
 </div>
 <script>
