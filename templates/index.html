@@ -86,6 +86,15 @@
     0%, 100% { box-shadow: 0 10px 22px rgba(0,0,0,0.18), 0 0 0px rgba(255,215,0,0.0); }
     50% { box-shadow: 0 10px 22px rgba(0,0,0,0.18), 0 0 24px rgba(255,215,0,0.85); }
   }
+  @keyframes avatarFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes cardTiltIn {
+    0%   { transform: perspective(800px) rotateY(-25deg) rotateX(6deg) scale(0.9); opacity: 0; }
+    60%  { transform: perspective(800px) rotateY(4deg) rotateX(-1deg) scale(1.02); opacity: 1; }
+    100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg) scale(1); opacity: 1; }
+  }
   #rp-card {
     background: linear-gradient(135deg, #7a0000 0%, #d00000 45%, #860000 100%);
     border: 2px solid rgba(255,215,0,0.75);
@@ -96,8 +105,9 @@
     overflow: visible;
     box-shadow: 0 10px 22px rgba(0,0,0,0.18);
     width: 100%;
+    animation: cardTiltIn 900ms cubic-bezier(.2,.8,.3,1) both;
   }
-  #rp-card.jackpot { animation: jackpotPulse 1.4s ease-in-out 3; }
+  #rp-card.jackpot { animation: cardTiltIn 900ms cubic-bezier(.2,.8,.3,1) both, jackpotPulse 1.4s ease-in-out 3; }
   #rp-card .watermark {
     position: absolute; right: -18px; top: -18px; font-size: 130px; opacity: 0.10;
     color: rgba(255,215,0,0.95); transform: rotate(10deg); font-weight: 900; pointer-events: none;
@@ -182,6 +192,7 @@
   .card-avatar-wrap img {
     height: 84px;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+    animation: avatarFloat 2.4s ease-in-out infinite;
   }
 </style>
 </head>
@@ -216,7 +227,7 @@
     <div class="line2" id="title-line2"></div>
   </div>
 
- <!--
+<!--
 <div id="counter-wrap" style="margin-top: 6px; margin-bottom: 4px; font-size: 12px; color: #8a8d98;">
   <a href='http://www.freevisitorcounters.com' style="color: #8a8d98; text-decoration: none;">Free counter</a>
   <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=13d0b5da4f6d6106fec0780bfaa51d051d13d479'></script>
@@ -232,7 +243,7 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
 }, true);
 </script>
 -->
- 
+
   <label for="name-input">Enter name 请输入您的富贵名</label>
   <input type="text" id="name-input" value="YOU" maxlength="18">
 
