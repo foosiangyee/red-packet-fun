@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🧧 Red Packet Fun</title>
+<title>🧧 Red Packet Fun — CNY Fortune Generator</title>
+<meta name="description" content="A free, bilingual (Chinese/English) Chinese New Year fortune generator. No login, no payment, no data collection — just a fun animated red packet reveal you can download and share.">
+
+<!-- Open Graph tags: without these, sharing this link on LinkedIn/WhatsApp/etc.
+     shows a bare, blank link with no preview — which reads as untrustworthy.
+     These give it a proper title, description, and image card instead. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="🧧 Red Packet Fun — CNY Fortune Generator">
+<meta property="og:description" content="A free, bilingual Chinese New Year fortune generator. No login, no payment, no data collection — just a fun animated reveal you can download and share.">
+<meta property="og:image" content="/static/images/og-preview.png">
+<meta property="og:url" content="https://red-packet-fun-production.up.railway.app/">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="🧧 Red Packet Fun — CNY Fortune Generator">
+<meta name="twitter:description" content="A free, bilingual Chinese New Year fortune generator. No login, no payment, no data collection.">
+<meta name="twitter:image" content="/static/images/og-preview.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 font-size=%2290%22><text y=%22.9em%22>🧧</text></svg>">
 <style>
   * { box-sizing: border-box; }
@@ -520,11 +535,31 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
   };
 
   // Rarity-tier avatar images — same three tiers as BURST_CONFIG above.
+  // Each tier now has multiple avatars; one is picked at random per shake
+  // so repeat shakes within the same tier don't always show the same character.
   const AVATAR_MAP = {
-    normal:  { src: "/static/images/tier-normal.png",  alt: "Lucky red packet" },
-    high:    { src: "/static/images/tier-high.png",    alt: "Lucky fortune cat" },
-    jackpot: { src: "/static/images/tier-jackpot.png", alt: "Cai Shen, God of Wealth" }
+    normal: [
+      { src: "/static/images/tier-normal.png",   alt: "Lucky red packet" },
+      { src: "/static/images/tier-normal-2.png", alt: "Cheerful mandarin orange" },
+      { src: "/static/images/tier-normal-3.png", alt: "Happy firecracker" },
+      { src: "/static/images/tier-normal-4.png", alt: "Cheerful red lantern" }
+    ],
+    high: [
+      { src: "/static/images/tier-high.png",   alt: "Lucky fortune cat" },
+      { src: "/static/images/tier-high-2.png", alt: "Joyful koi fish" },
+      { src: "/static/images/tier-high-3.png", alt: "Festive dragon dance head" }
+    ],
+    jackpot: [
+      { src: "/static/images/tier-jackpot.png",   alt: "Cai Shen, God of Wealth" },
+      { src: "/static/images/tier-jackpot-2.png", alt: "Tu Di Gong, Earth God" },
+      { src: "/static/images/tier-jackpot-3.png", alt: "Vibrant phoenix" }
+    ]
   };
+
+  function pickAvatar(tier) {
+    const options = AVATAR_MAP[tier];
+    return options[Math.floor(Math.random() * options.length)];
+  }
 
   // ---------------------------------------------------------------------
   // Helpers
@@ -586,6 +621,7 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
     if (isJackpot) tier = "jackpot";
     else if (fortuneScore >= 90) tier = "high";
     const burst = BURST_CONFIG[tier];
+    const avatar = pickAvatar(tier);
 
     successEl.style.display = "block";
 
@@ -603,7 +639,7 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
         </div>
         ${jackpotBanner}
         <div class="card-avatar-wrap${tier === 'jackpot' ? ' jackpot-avatar' : ''}">
-          <img src="${AVATAR_MAP[tier].src}" alt="${AVATAR_MAP[tier].alt}">
+          <img src="${avatar.src}" alt="${avatar.alt}">
         </div>
         <div class="grid">
           <div><b>To / 收件人:</b><br>${escapeHtml(safeName)}</div>
