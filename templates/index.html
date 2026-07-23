@@ -750,27 +750,7 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
       }
       status.textContent = "Rendering...";
 
-      // Capture a fixed-width, off-screen CLONE of the card rather than the
-      // live on-screen element. This keeps the on-screen card free to be
-      // whatever width looks right on each device (full-width on desktop,
-      // narrower on mobile), while the exported PNG is always the same
-      // consistent shape regardless of the viewport it was downloaded from.
-      const liveCard = document.getElementById("rp-card");
-      const clone = liveCard.cloneNode(true);
-      clone.id = "rp-card-export-clone";
-      clone.style.animation = "none";      // freeze on final state, no mid-animation transform
-      clone.style.width = "420px";
-      clone.style.maxWidth = "420px";
-
-      const offscreenWrap = document.createElement("div");
-      offscreenWrap.style.position = "absolute";
-      offscreenWrap.style.left = "-9999px";
-      offscreenWrap.style.top = "0";
-      offscreenWrap.appendChild(clone);
-      document.body.appendChild(offscreenWrap);
-
-      html2canvas(clone, { scale: 2, backgroundColor: null }).then(function (canvas) {
-        offscreenWrap.remove();
+      html2canvas(document.getElementById("rp-card"), { scale: 2, backgroundColor: null }).then(function (canvas) {
         if (canvas.width === 0 || canvas.height === 0) {
           status.textContent = "Capture failed (0x0 canvas) — see note below";
           return;
@@ -817,7 +797,6 @@ document.getElementById('counter-wrap').addEventListener('click', function(e) {
           status.textContent = "Ready — see image below if nothing downloaded";
         }, "image/png");
       }).catch(function (err) {
-        offscreenWrap.remove();
         status.textContent = "Capture error: " + (err && err.message ? err.message : String(err));
       });
     });
